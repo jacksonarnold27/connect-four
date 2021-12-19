@@ -16,43 +16,60 @@ let board = []; // array of rows, each row is array of cells  (board[y][x])
  */
 
 function makeBoard() {
-  // TODO: set "board" to empty HEIGHT x WIDTH matrix array
+  // creating a board using global constants WIDTH and HEIGHT dimensions board[HEIGHT][WIDTH] 
+  // (could be thought of as board[row][col])
+  board = new Array(HEIGHT);
+  for (let i = 0; i < board.length; i++) {
+    board[i] = new Array(WIDTH);
+  }
+  console.log('makeBoard(): executed.');
 }
-
 /** makeHtmlBoard: make HTML table and row of column tops. */
 
 function makeHtmlBoard() {
-  // TODO: get "htmlBoard" variable from the item in HTML w/ID of "board"
+  // set variable htmlBoard to the HTML board DOM node
+  let htmlBoard = document.getElementById('board');
+  // top will be the very top row of the table, the header row in which the cells are contained
+  let top = document.createElement("tr"); // create variable top = tr (table row) element
+  top.setAttribute("id", "column-top"); // set top's id: 'column-top'
+  top.addEventListener("click", handleClick); // add event listener for click on tr element, calling handleClick
 
-  // TODO: add comment for this code
-  let top = document.createElement("tr");
-  top.setAttribute("id", "column-top");
-  top.addEventListener("click", handleClick);
-
-  for (let x = 0; x < WIDTH; x++) {
-    let headCell = document.createElement("td");
-    headCell.setAttribute("id", x);
-    top.append(headCell);
+  for (let x = 0; x < WIDTH; x++) { // iterate through columns of board
+    let headCell = document.createElement("td"); // create variable headCell = new td (data cell) element
+    headCell.setAttribute("id", x); // set headCell's id: x, the current column
+    top.append(headCell); // append headCell (td) to top (tr).
   }
-  htmlBoard.append(top);
+  htmlBoard.append(top); // append top (tr) to htmlBoard (table)
 
-  // TODO: add comment for this code
-  for (let y = 0; y < HEIGHT; y++) {
-    const row = document.createElement("tr");
-    for (let x = 0; x < WIDTH; x++) {
-      const cell = document.createElement("td");
-      cell.setAttribute("id", `${y}-${x}`);
-      row.append(cell);
+  /* for loop iterates through each row and creates a table row element containing data cell elements in each column
+    the data cell elements have an id: 'y-x' corresponding to that cell's coordinates in board[y][x]
+    each row is then appended to htmlBoard to create the table */
+  for (let y = 0; y < HEIGHT; y++) { // iterate through rows of board
+    const row = document.createElement("tr"); // create variable row = tr (table row) element
+    for (let x = 0; x < WIDTH; x++) { // iterate through each column of each row
+      const cell = document.createElement("td"); // create variable cell = td (data cell) element
+      cell.setAttribute("id", `${y}-${x}`); // set cell's id: y-x (the y, x coordinates of the cell)
+      // EXAMPLE: cell is in the second row (y=1), fifth column(x=4). example cell's id: '1-4'
+      // y-x : row-column
+      row.append(cell); // append cell (td) to row (tr)
     }
-    htmlBoard.append(row);
+    htmlBoard.append(row); // append row (tr) to htmlBoard (table)
   }
+  console.log('makeHtmlBoard(): executed.');
 }
 
 /** findSpotForCol: given column x, return top empty y (null if filled) */
 
 function findSpotForCol(x) {
-  // TODO: write the real version of this, rather than always returning 0
-  return 0;
+  for (let y = 0; y < HEIGHT; y++) { // iterate through rows of the board, starting at the top
+    if (board[y][x] == null) { // if the cell [y][x] is empty, do nothing--unless...
+      if (y == HEIGHT - 1) return y; // if y is the last row of the board, return y
+    }
+    else { // if the cell [y][x] is NOT empty
+      return y === 0 ? null : y; // if the column is completely filled, return null. Otherwise, return y
+    }
+  }
+  console.error('findSpotForCol(): failed to return y. THIS SHOULD NOT EXECUTE.');
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
