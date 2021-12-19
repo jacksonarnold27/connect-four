@@ -27,10 +27,11 @@ function makeBoard() {
 /** makeHtmlBoard: make HTML table and row of column tops. */
 
 function makeHtmlBoard() {
-  // set variable htmlBoard to the HTML board DOM node
+  // set variable htmlBoard = HTML table DOM node
   let htmlBoard = document.getElementById('board');
   // top will be the very top row of the table, the header row in which the cells are contained
-  let top = document.createElement("tr"); // create variable top = tr (table row) element
+  // top is where the user will click to add new pieces to the board. the row itself will not hold pieces.
+  let top = document.createElement("tr"); // create variable top = new tr (table row) element
   top.setAttribute("id", "column-top"); // set top's id: 'column-top'
   top.addEventListener("click", handleClick); // add event listener for click on tr element, calling handleClick
 
@@ -45,9 +46,9 @@ function makeHtmlBoard() {
     the data cell elements have an id: 'y-x' corresponding to that cell's coordinates in board[y][x]
     each row is then appended to htmlBoard to create the table */
   for (let y = 0; y < HEIGHT; y++) { // iterate through rows of board
-    const row = document.createElement("tr"); // create variable row = tr (table row) element
+    const row = document.createElement("tr"); // create variable row = new tr (table row) element
     for (let x = 0; x < WIDTH; x++) { // iterate through each column of each row
-      const cell = document.createElement("td"); // create variable cell = td (data cell) element
+      const cell = document.createElement("td"); // create variable cell = new td (data cell) element
       cell.setAttribute("id", `${y}-${x}`); // set cell's id: y-x (the y, x coordinates of the cell)
       // EXAMPLE: cell is in the second row (y=1), fifth column(x=4). example cell's id: '1-4'
       // y-x : row-column
@@ -73,9 +74,17 @@ function findSpotForCol(x) {
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
+/* this function should add a div inside the correct td cell in the HTML game board. This div should
+ have the piece class on it, and should have a class for whether the current player is 1 or 2, like p1 or p2 */
 
 function placeInTable(y, x) {
-  // TODO: make a div and insert into correct table cell
+  let player = 'p' + currPlayer; // player is a string that represents the current player (p1 or p2)
+  let cellID = `${y}-${x}`; // cellID is a string that corresponds with the given cell's id
+  let div = document.createElement('div'); // create variable div = new div element
+  div.classList.add('piece', player); // add classes 'piece' and 'p1'/'p2' to div
+  let cell = document.getElementById(cellID); // set variable cell = HTML td cell DOM node at board[y][x]
+  cell.append(div); // append div to cell (td)
+  console.log(`placeInTable(${y},${x}): executed.`);
 }
 
 /** endGame: announce game end */
