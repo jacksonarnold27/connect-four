@@ -62,12 +62,14 @@ function makeHtmlBoard() {
 /** findSpotForCol: given column x, return top empty y (null if filled) */
 
 function findSpotForCol(x) {
-  for (let y = 0; y < HEIGHT; y++) { // iterate through rows of the board, starting at the top
-    if (board[y][x] == null) { // if the cell [y][x] is empty, do nothing--unless...
-      if (y == HEIGHT - 1) return y; // if y is the last row of the board, return y
+  for (let y = HEIGHT - 1; y >= 0; y--) {// iterate through rows of the board, starting at the bottom
+    if (board[y][x] == undefined) { // if the cell [y][x] is empty, return y
+      console.log(`findSpotForCol(): cell[${y}][${x}] is empty.`);
+      return y;
     }
-    else { // if the cell [y][x] is NOT empty
-      return y === 0 ? null : y; // if the column is completely filled, return null. Otherwise, return y
+    else { // if the cell [y][x] is NOT empty, continue
+      console.log(`findSpotForCol(): cell[${y}][${x}] is already filled. Continuing...`);
+      if (y === 0) return null;
     }
   }
   console.error('findSpotForCol(): failed to return y. THIS SHOULD NOT EXECUTE.');
@@ -90,7 +92,9 @@ function placeInTable(y, x) {
 /** endGame: announce game end */
 
 function endGame(msg) {
-  // TODO: pop up alert message
+  setTimeout(() => {
+    alert(msg);
+  }, 50);
 }
 
 /** handleClick: handle click of column top to play piece */
@@ -106,7 +110,7 @@ function handleClick(evt) {
   }
 
   // place piece in board and add to HTML table
-  // TODO: add line to update in-memory board
+  board[y][x] = currPlayer;
   placeInTable(y, x);
 
   // check for win
@@ -115,10 +119,16 @@ function handleClick(evt) {
   }
 
   // check for tie
-  // TODO: check if all cells in board are filled; if so call, call endGame
+  for (let i = HEIGHT - 1; i >= 0; i--) { // iterate over each row in board, starting at bottom
+    if (board[i].includes(undefined)) { // if the row includes an empty cell, exit for loop
+      break;
+    } // else if the top column is full, call endGame as a tie
+    else if (i === 0) endGame("Stalemate! There's been a tie.");
+  }
 
   // switch players
-  // TODO: switch currPlayer 1 <-> 2
+  currPlayer = currPlayer === 1 ? 2 : 1; // if currPlayer is 1, switch to 2 and vice-versa
+  console.log(`handleClick(evt): executed. The current player is now player ${currPlayer}.`);
 }
 
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
@@ -139,15 +149,16 @@ function checkForWin() {
     );
   }
 
-  // TODO: read and understand this code. Add comments to help you.
 
-  for (let y = 0; y < HEIGHT; y++) {
-    for (let x = 0; x < WIDTH; x++) {
-      let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
-      let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
-      let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
-      let diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
 
+  for (let y = 0; y < HEIGHT; y++) { // iterate over rows
+    for (let x = 0; x < WIDTH; x++) { // iterate over columns
+      let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]]; // list of horizontal cells
+      let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]]; // list of vertical cells
+      let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]]; // list of diagonal (down right) cells 
+      let diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]]; // list of diagonal (down left) cells
+
+      // call local _win(cells) function on each list of cells. If any of the lists contain a win, return true
       if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
         return true;
       }
